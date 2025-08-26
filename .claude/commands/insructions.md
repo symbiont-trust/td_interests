@@ -8,22 +8,47 @@ I want you to generate a plan.md of the necessary steps to generate the code.  T
 
 This is the same directory where this instructions.md file is located.
 
-Note I will later be executing the plan.md file using claude.
+Note I will later be executing the plan.md file using claude to generate the code.
+
+Therefore if you see improvements over this instructions.md file that can be made when generating plan.md please do so.  We want the plan.md to be in a good format for Claude (you) to generate the code when I later execute /plan
 
 
 # High Level Description of Software
 
 I want to create a website called "My Interests".  It is website where you can go and register and choose what your interests are.  You can then search for those who have similar interests and make friend requests to them.  
 
-When they accept your friend request you are now connected via your common interests and you can communicate with them via direct private message board threads or public message board threads based on interests. Note the details are shown in subsequent sections.
+When they accept your friend request you are now connected via your common interests and you can communicate with them via direct private message threads or public message threads based on interests. Note the details of the message threads are shown in subsequent sections.
 
 When you register your identity key is your wallet address.  As we are using Reown's App Kit Account abstraction the user does not need to install a wallet like Metamask as they can instead use Reown's own Account Absraction wallet.  Behind the scenes the account abstraction of Reown's App Kit shares the private key fragments in such a way that no single user storing the private key fragments can use the private key for signing.  Only the rightful owner of the key can sign.  This allows a web 2 user who has not installed a wallet to be allocated a wallet behind the scenes.  However web 3 users can use their ethereum compatible wallet.
+
+Note there are also message notifications which work a bit like youtube which are also expanded upon in sections below.
 
 Each user of the "My Interets" website has a profile which captures their connections based on interests.  The data to create the profile is stored in the postgres database.  When the profile is generated for external use, the profile is created in json format.
 
 "My Interests" exposes an api where a request can be made to retrieve the profile of a user if the wallet address is known for that user.  One needs a client-id to be able to call the "Profile API". 
 
 Before being able to call the "Profile API", the client needs to authenticate against the "Profile API".
+
+# Structure of the website
+
+I want it to have a header wih a title called "My Interests"
+
+There needs to be a settings menu which is reponsive for both desktop and mobile views.
+
+The settings menu should allow the user to edit the details they gave during registration with the exception of the wallet address which they cannot change.
+
+At the bottom should be the footer which should have links to:
+
+* Terms and Conditions
+* Privacy Policy
+* Contact Us
+
+You can generate content which for Terms and Conditions and Privacy Policy which make sense for the description of software section above.
+
+For Contact Us you can add the following details:
+
+Email: john.charles.dickerson@gmail.com
+Location: Nairobi, Kenya
 
 
 # Tech stack
@@ -65,6 +90,8 @@ The profile-api-client directory contains Java Spring Boot code for the caller o
 
 When registering, the software is using Reown's App Kit.  If they choose to register using 
 App Kit's account abstraction then a wallet address will be created for them.
+
+Probably you need to use Wagmi and configure providers which wrap the react router config.
 
 When the user registers they should select their country and their interests.
 
