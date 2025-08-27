@@ -22,7 +22,7 @@ td_interests/
 ## Phase 1: Project Setup and Database
 
 ### 1.1 Database Setup
-- [ ] Set up PostgreSQL database
+- [ ] Set up PostgreSQL database named "myinterests"
 - [ ] Connect to PostgreSQL using `psql postgres`
 - [ ] Execute continent/country data from `sql/continents_countries.sql`
 - [ ] Execute interest tags data from `sql/interest_tags.sql` 
@@ -49,7 +49,7 @@ td_interests/
   - jjwt (JWT library)
   - web3j (for ECDSA signatures)
   - spring-boot-starter-validation
-- [ ] Configure `application.yml` with database connection
+- [ ] Configure `application.yml` with database connection to "myinterests"
 - [ ] Set up Lombok configuration
 
 ### 1.3 Frontend Project Setup

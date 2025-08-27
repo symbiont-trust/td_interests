@@ -67,7 +67,7 @@ Frontend for Interests website:
 
 Backend for Interests website:
 
-* Java Spring Boot backend using Spring Security, Hibernate and a postgres database
+* Java Spring Boot backend using Spring Security, Hibernate and a postgres database named "myinterests"
 
 Client code for accessing "ProfileAPI":
 
