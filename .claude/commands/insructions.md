@@ -111,7 +111,7 @@ This sql file contains the interest data:
 
     <project-dir>/sql/interest_tags.sql
 
-You can run the 2 sql files to populate the standing data when later carrying out the plan.md
+The Spring Boot application should be configured to automatically run these 2 SQL files at startup when running in dev mode to populate the standing data. This should be configured in the application.yml file using spring.sql.init.mode=always and appropriate data source initialization settings.
 
 As these files are pretty large will show examples of the inserts here:
 

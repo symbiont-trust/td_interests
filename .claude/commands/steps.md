@@ -24,8 +24,10 @@ td_interests/
 ### 1.1 Database Setup
 - [ ] Set up PostgreSQL database named "myinterests"
 - [ ] Connect to PostgreSQL using `psql postgres`
-- [ ] Execute continent/country data from `sql/continents_countries.sql`
-- [ ] Execute interest tags data from `sql/interest_tags.sql` 
+- [ ] Create database schema tables (will be auto-created by Hibernate)
+- [ ] Configure Spring Boot to auto-execute SQL data files at startup in dev mode:
+  - `sql/continents_countries.sql`
+  - `sql/interest_tags.sql`
 - [ ] Create additional required tables:
   - users (wallet_address PK, handle, fk_country, location_tags, created_at, updated_at)
   - user_interests (user_wallet_address, interest_tag_id)
@@ -49,7 +51,10 @@ td_interests/
   - jjwt (JWT library)
   - web3j (for ECDSA signatures)
   - spring-boot-starter-validation
-- [ ] Configure `application.yml` with database connection to "myinterests"
+- [ ] Configure `application.yml` with:
+  - Database connection to "myinterests"
+  - Auto-execute SQL files on startup in dev mode (spring.sql.init.mode=always)
+  - Configure data source initialization to run continent/country and interest tag SQL files
 - [ ] Set up Lombok configuration
 
 ### 1.3 Frontend Project Setup
