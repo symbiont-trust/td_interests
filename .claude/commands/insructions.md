@@ -2,15 +2,15 @@
 
 This file has my requirements. 
 
-I want you to generate a plan.md of the necessary steps to generate the code.  The plan.md file shoould be generated to the following directory:
+I want you to generate a steps.md of the necessary steps to generate the code.  The steps.md file shoould be generated to the following directory:
 
 <project-directory>/.claude/commands
 
 This is the same directory where this instructions.md file is located.
 
-Note I will later be executing the plan.md file using claude to generate the code.
+Note I will later be executing the steps.md file using claude to generate the code.
 
-Therefore if you see improvements over this instructions.md file that can be made when generating plan.md please do so.  We want the plan.md to be in a good format for Claude (you) to generate the code when I later execute the command: "/plan"
+Therefore if you see improvements over this instructions.md file that can be made when generating steps.md please do so.  We want the steps.md to be in a good format for Claude (you) to generate the code when I later execute the command: "/steps"
 
 
 # High Level Description of Software
@@ -342,6 +342,6 @@ You are allowed to do:
 
 # Conclusion
 
-If you have now read these instructions please now generate the plan.md file and place it in this location:
+If you have now read these instructions please now generate the steps.md file and place it in this location:
 
 <project-directory>/.claude/commands
