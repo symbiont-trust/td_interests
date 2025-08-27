@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: profile-api-client
+
+server:
+  port: 8081
+
+profile:
+  api:
+    base-url: http://localhost:8080
+    client-id: ${PROFILE_API_CLIENT_ID:default-client-id}
+
+logging:
+  level:
+    com.myinterests.profileapiclient: DEBUG

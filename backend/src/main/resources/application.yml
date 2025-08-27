@@ -1,0 +1,58 @@
+spring:
+  application:
+    name: my-interests-backend
+  
+  profiles:
+    active: dev
+  
+  datasource:
+    url: jdbc:postgresql://localhost:5432/myinterests
+    username: ${DB_USERNAME:johndickerson}
+    password: ${DB_PASSWORD:}
+    driver-class-name: org.postgresql.Driver
+  
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+
+server:
+  port: 8080
+
+logging:
+  level:
+    com.myinterests.backend: DEBUG
+    org.springframework.security: DEBUG
+
+app:
+  signature:
+    private-key: ${PROFILE_SIGNATURE_PRIVATE_KEY:}
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+  
+  sql:
+    init:
+      mode: always
+      data-locations:
+        - classpath:sql/continents_countries.sql
+        - classpath:sql/interest_tags.sql
+        - classpath:sql/api_clients.sql
+      continue-on-error: false
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+  
+  sql:
+    init:
+      mode: never
