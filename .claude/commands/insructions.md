@@ -111,8 +111,31 @@ This sql file contains the interest data:
 
     <project-dir>/sql/interest_tags.sql
 
-When generating the spring boot domain classes you need to take a look at the above 2 sql
-files to work out what the these Domain classes will looks like:
+You can run the 2 sql files to populate the standing data when later carrying out the plan.md
+
+As these files are pretty large will show examples of the inserts here:
+
+The inserts for continent look like:
+
+```
+INSERT INTO continent ( id, name, created_at, updated_at )
+Values ( 1, 'North America', current_timestamp, current_timestamp );
+```
+
+The inserts for country look like:
+
+```
+INSERT INTO country ( id, name, fk_continent, created_at, updated_at )
+VALUES ( 1, 'Afghanistan', 5, current_timestamp, current_timestamp );
+```
+
+the inserts for interest_tag look like:
+
+```
+INSERT INTO interest_tag (id, created_at, updated_at, "name")
+VALUES(1, current_timestamp, current_timestamp, 'Abalone Fishing' );
+```
+When generating the spring boot domain classes you need to take a look at exanples of the insert statements I showed.
 
 * Continent
 * Country
@@ -265,7 +288,7 @@ Note that I have provided an example axiosHelper.ts file under:
 
 When you generate the steps.md file please also reference this:
 
-@../config/domain_class_specifics.md
+@.claude/config/domain_class_specifics.md
 
 domain_class_specifics.md specifies stuff like all domain classes should extend the Domain class which is shown in the file.
 
