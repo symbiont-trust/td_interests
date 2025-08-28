@@ -18,7 +18,7 @@ export const PrivacyPage: React.FC = () => {
         <IconButton onClick={() => navigate(-1)} sx={{ mr: 2 }}>
           <ArrowBackIcon />
         </IconButton>
-        <Typography variant="h4" component="h1">
+        <Typography variant="h5" component="h1" sx={{ fontWeight: 500 }}>
           Privacy Policy
         </Typography>
       </Box>

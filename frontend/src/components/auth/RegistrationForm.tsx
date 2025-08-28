@@ -12,11 +12,12 @@ import {
   Autocomplete,
   Alert,
   CircularProgress,
-  Paper,
   Stepper,
   Step,
-  StepLabel
+  StepLabel,
+  IconButton
 } from '@mui/material';
+import { ArrowBack as ArrowBackIcon } from '@mui/icons-material';
 import { useAccount } from 'wagmi';
 import { useNavigate } from 'react-router-dom';
 import { AuthService, DataService } from '../../services/authService';
@@ -324,10 +325,25 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onRegistrati
   };
 
   return (
-    <Paper sx={{ p: 4, maxWidth: 600, mx: 'auto' }}>
-      <Typography variant="h4" component="h1" gutterBottom align="center">
-        Register for My Interests
-      </Typography>
+    <Box sx={{ width: '100%', minWidth: '100%' }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+        <IconButton onClick={() => navigate(-1)} sx={{ mr: 2 }}>
+          <ArrowBackIcon />
+        </IconButton>
+        <Typography variant="h5" component="h1" sx={{ fontWeight: 500 }}>
+          Register for My Interests
+        </Typography>
+      </Box>
+      
+      {/* Force width to match WelcomeContent */}
+      <Box sx={{ height: 0, overflow: 'hidden' }}>
+        <Typography variant="h2" component="div">
+          Welcome to My Interests
+        </Typography>
+        <Typography variant="h5" component="div">
+          Connect based on shared interests, communicate, and build meaningful connections.
+        </Typography>
+      </Box>
 
       <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
         {steps.map((label) => (
@@ -371,6 +387,6 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onRegistrati
           </Button>
         )}
       </Box>
-    </Paper>
+    </Box>
   );
 };

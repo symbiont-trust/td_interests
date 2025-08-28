@@ -5,8 +5,9 @@ import {
   Typography,
   Alert,
   CircularProgress,
-  Paper
+  IconButton
 } from '@mui/material';
+import { ArrowBack as ArrowBackIcon } from '@mui/icons-material';
 import { useAccount } from 'wagmi';
 import { useNavigate } from 'react-router-dom';
 import { AuthService } from '../../services/authService';
@@ -87,14 +88,29 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess }) => {
   };
 
   return (
-    <Paper sx={{ p: 4, maxWidth: 400, mx: 'auto' }}>
-      <Typography variant="h4" component="h1" gutterBottom align="center">
-        Login
-      </Typography>
+    <Box sx={{ width: '100%', minWidth: '100%' }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+        <IconButton onClick={() => navigate(-1)} sx={{ mr: 2 }}>
+          <ArrowBackIcon />
+        </IconButton>
+        <Typography variant="h5" component="h1" sx={{ fontWeight: 500 }}>
+          Login
+        </Typography>
+      </Box>
 
       <Typography variant="body2" color="text.secondary" align="center" paragraph>
         Connect your wallet and sign a message to login to your My Interests account.
       </Typography>
+      
+      {/* Force width to match WelcomeContent */}
+      <Box sx={{ height: 0, overflow: 'hidden' }}>
+        <Typography variant="h2" component="div">
+          Welcome to My Interests
+        </Typography>
+        <Typography variant="h5" component="div">
+          Connect based on shared interests, communicate, and build meaningful connections.
+        </Typography>
+      </Box>
 
       {error && (
         <Alert severity="error" sx={{ mb: 2 }}>
@@ -112,7 +128,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess }) => {
         </Alert>
       )}
 
-      <Box sx={{ textAlign: 'center', mt: 3 }}>
+      <Box sx={{ textAlign: 'center', mt: 3, maxWidth: 600, mx: 'auto' }}>
         <Button
           variant="contained"
           size="large"
@@ -136,6 +152,6 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess }) => {
           </Button>
         </Typography>
       </Box>
-    </Paper>
+    </Box>
   );
 };
