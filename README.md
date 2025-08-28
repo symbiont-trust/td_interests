@@ -95,14 +95,23 @@ frontend/
    npm install
    ```
 
-2. **Start development server:**
+2. **Configure environment:**
+   ```bash
+   cp .env.example .env
+   ```
+   Edit the `.env` file with your configuration:
+   - `VITE_API_BASE_URL` - Backend API URL (default: http://localhost:8080)
+   - `VITE_APP_TITLE` - Application title (default: "My Interests")
+   - `VITE_REOWN_PROJECT_ID` - Get your project ID from [Reown Cloud](https://cloud.reown.com/)
+
+3. **Start development server:**
    ```bash
    npm run dev
    ```
    
    Frontend will be available at `http://localhost:5173`
 
-3. **Build for production:**
+4. **Build for production:**
    ```bash
    npm run build
    ```
