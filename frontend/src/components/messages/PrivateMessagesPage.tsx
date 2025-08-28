@@ -197,7 +197,7 @@ export const PrivateMessagesPage: React.FC = () => {
   return (
     <div>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h4" component="h1">
+        <Typography variant="h5" component="h1">
           Messages
         </Typography>
         <Button

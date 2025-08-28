@@ -4,7 +4,7 @@ import { Box, Typography, Button } from '@mui/material';
 export const WelcomeContent: React.FC = () => {
   return (
     <Box sx={{ textAlign: 'center', py: 4 }}>
-      <Typography variant="h2" component="h1" gutterBottom>
+      <Typography variant="h4" component="h1" gutterBottom>
         Welcome to My Interests
       </Typography>
       <Typography variant="h5" component="h2" color="text.secondary">

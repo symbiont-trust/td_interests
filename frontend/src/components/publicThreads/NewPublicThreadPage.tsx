@@ -110,7 +110,7 @@ export const NewPublicThreadPage: React.FC = () => {
         <IconButton onClick={() => navigate('/public-threads')}>
           <ArrowBackIcon />
         </IconButton>
-        <Typography variant="h4" component="h1">
+        <Typography variant="h5" component="h1">
           Create New Discussion Thread
         </Typography>
       </Box>

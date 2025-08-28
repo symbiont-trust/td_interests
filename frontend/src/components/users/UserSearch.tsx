@@ -117,7 +117,7 @@ export const UserSearch: React.FC = () => {
 
   return (
     <div>
-      <Typography variant="h4" component="h1" gutterBottom>
+      <Typography variant="h5" component="h1" gutterBottom>
         Find People
       </Typography>
 
