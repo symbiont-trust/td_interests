@@ -7,13 +7,13 @@ spring:
   
   datasource:
     url: jdbc:postgresql://localhost:5432/myinterests
-    username: ${DB_USERNAME:johndickerson}
-    password: ${DB_PASSWORD:}
+    username: ${DB_USERNAME:myinterests}
+    password: ${DB_PASSWORD:myinterests}
     driver-class-name: org.postgresql.Driver
   
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
     show-sql: true
     properties:
       hibernate:
@@ -46,6 +46,8 @@ spring:
         - classpath:sql/interest_tags.sql
         - classpath:sql/api_clients.sql
       continue-on-error: false
+  jpa:
+    defer-datasource-initialization: true
 
 ---
 spring:
