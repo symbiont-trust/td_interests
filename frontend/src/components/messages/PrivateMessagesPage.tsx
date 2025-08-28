@@ -195,7 +195,7 @@ export const PrivateMessagesPage: React.FC = () => {
   }
 
   return (
-    <Box sx={{ maxWidth: 800, mx: 'auto', p: 3 }}>
+    <div>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Typography variant="h4" component="h1">
           Messages
@@ -294,6 +294,6 @@ export const PrivateMessagesPage: React.FC = () => {
           </Box>
         )}
       </TabPanel>
-    </Box>
+    </div>
   );
 };

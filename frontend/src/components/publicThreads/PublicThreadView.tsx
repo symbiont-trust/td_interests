@@ -326,7 +326,7 @@ export const PublicThreadView: React.FC = () => {
   }
 
   return (
-    <Box sx={{ maxWidth: 900, mx: 'auto', p: 2, height: '90vh', display: 'flex', flexDirection: 'column' }}>
+    <Box sx={{ width: '100%', height: '90vh', display: 'flex', flexDirection: 'column' }}>
       {/* Header */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, pb: 2, borderBottom: 1, borderColor: 'divider' }}>
         <IconButton onClick={() => navigate('/public-threads')}>

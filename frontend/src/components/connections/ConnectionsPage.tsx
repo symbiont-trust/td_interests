@@ -248,7 +248,7 @@ export const ConnectionsPage: React.FC = () => {
   }
 
   return (
-    <Box sx={{ maxWidth: 1200, mx: 'auto', p: 3 }}>
+    <div>
       <Typography variant="h4" component="h1" gutterBottom>
         My Connections
       </Typography>
@@ -338,6 +338,6 @@ export const ConnectionsPage: React.FC = () => {
           )}
         </TabPanel>
       </Paper>
-    </Box>
+    </div>
   );
 };

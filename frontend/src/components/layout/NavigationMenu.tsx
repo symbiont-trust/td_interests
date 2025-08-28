@@ -28,6 +28,7 @@ import { useAccount } from 'wagmi';
 interface NavigationMenuProps {
   mobileOpen: boolean;
   onMobileToggle: () => void;
+  isDesktop?: boolean;
 }
 
 interface NavItem {
@@ -46,16 +47,19 @@ const navItems: NavItem[] = [
   { text: 'Settings', icon: <SettingsIcon />, path: '/settings' }
 ];
 
-export const NavigationMenu: React.FC<NavigationMenuProps> = ({ mobileOpen, onMobileToggle }) => {
+export const NavigationMenu: React.FC<NavigationMenuProps> = ({ mobileOpen, onMobileToggle, isDesktop }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const theme = useTheme();
   const { address } = useAccount();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
+  
+  // If isDesktop prop is provided, use it; otherwise fall back to screen size detection
+  const shouldUseDesktopMode = isDesktop !== undefined ? isDesktop : !isSmallScreen;
 
   const handleNavClick = (path: string) => {
     navigate(path);
-    if (isSmallScreen) {
+    if (!shouldUseDesktopMode) {
       onMobileToggle();
     }
   };
@@ -122,7 +126,8 @@ export const NavigationMenu: React.FC<NavigationMenuProps> = ({ mobileOpen, onMo
     </Box>
   );
 
-  if (isSmallScreen) {
+  if (!shouldUseDesktopMode) {
+    // Mobile drawer - floating overlay
     return (
       <Drawer
         variant="temporary"
@@ -143,17 +148,22 @@ export const NavigationMenu: React.FC<NavigationMenuProps> = ({ mobileOpen, onMo
     );
   }
 
+  // Desktop sidebar - takes layout space (no position fixed)
   return (
     <Drawer
       variant="permanent"
       sx={{
         width: drawerWidth,
         flexShrink: 0,
+        alignSelf: 'stretch', // Stretch to fill parent height
         '& .MuiDrawer-paper': {
           width: drawerWidth,
           boxSizing: 'border-box',
-          position: 'relative',
-          height: '100%',
+          position: 'relative', // Not fixed - part of layout flow
+          height: '100%', // Full height of its container
+          borderRight: `1px solid ${theme.palette.divider}`,
+          display: 'flex',
+          flexDirection: 'column',
         },
       }}
     >

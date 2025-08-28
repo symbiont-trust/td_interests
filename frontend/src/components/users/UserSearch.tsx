@@ -116,7 +116,7 @@ export const UserSearch: React.FC = () => {
   };
 
   return (
-    <Box sx={{ maxWidth: 1200, mx: 'auto', p: 3 }}>
+    <div>
       <Typography variant="h4" component="h1" gutterBottom>
         Find People
       </Typography>
@@ -318,6 +318,6 @@ export const UserSearch: React.FC = () => {
           </Typography>
         </Box>
       )}
-    </Box>
+    </div>
   );
 };

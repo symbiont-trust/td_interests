@@ -173,7 +173,7 @@ export const ThreadView: React.FC = () => {
   }
 
   return (
-    <Box sx={{ maxWidth: 800, mx: 'auto', p: 2, height: '80vh', display: 'flex', flexDirection: 'column' }}>
+    <Box sx={{ width: '100%', height: '80vh', display: 'flex', flexDirection: 'column' }}>
       {/* Header */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, pb: 2, borderBottom: 1, borderColor: 'divider' }}>
         <IconButton onClick={() => navigate('/messages')}>

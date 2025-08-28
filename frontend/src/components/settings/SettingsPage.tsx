@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Container,
   Typography,
   Box,
   TextField,
@@ -117,22 +116,22 @@ export const SettingsPage: React.FC = () => {
 
   if (loading) {
     return (
-      <Container maxWidth="md" sx={{ mt: 4, display: 'flex', justifyContent: 'center' }}>
+      <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center', mt: 4 }}>
         <CircularProgress />
-      </Container>
+      </Box>
     );
   }
 
   if (!profile) {
     return (
-      <Container maxWidth="md" sx={{ mt: 4 }}>
+      <Box sx={{ width: '100%', mt: 4 }}>
         <Alert severity="error">Failed to load profile</Alert>
-      </Container>
+      </Box>
     );
   }
 
   return (
-    <Container maxWidth="md" sx={{ py: 4 }}>
+    <Box>
       <Card elevation={2}>
         <CardContent sx={{ p: 4 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
@@ -275,6 +274,6 @@ export const SettingsPage: React.FC = () => {
           </Box>
         </CardContent>
       </Card>
-    </Container>
+    </Box>
   );
 };

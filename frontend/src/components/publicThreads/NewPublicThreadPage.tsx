@@ -105,7 +105,7 @@ export const NewPublicThreadPage: React.FC = () => {
   const isFormValid = title.trim() && selectedInterests.length > 0 && initialMessage.trim();
 
   return (
-    <Box sx={{ maxWidth: 800, mx: 'auto', p: 3 }}>
+    <Box sx={{ width: '100%' }}>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
         <IconButton onClick={() => navigate('/public-threads')}>
           <ArrowBackIcon />

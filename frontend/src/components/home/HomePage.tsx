@@ -75,7 +75,7 @@ export const HomePage: React.FC = () => {
   }
 
   return (
-    <Box sx={{ maxWidth: 1200, mx: 'auto', p: 3 }}>
+    <div>
       <Typography variant="h4" component="h1" gutterBottom>
         Welcome back, {currentUser?.handle}!
       </Typography>
@@ -225,6 +225,6 @@ export const HomePage: React.FC = () => {
           </Typography>
         </Box>
       )}
-    </Box>
+    </div>
   );
 };
