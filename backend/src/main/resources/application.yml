@@ -31,6 +31,8 @@ logging:
 app:
   signature:
     private-key: ${PROFILE_SIGNATURE_PRIVATE_KEY:}
+  admin:
+    email: ${ADMIN_EMAIL:admin@myinterests.com}
 
 ---
 spring:

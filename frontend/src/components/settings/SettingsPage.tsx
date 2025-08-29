@@ -14,6 +14,7 @@ import {
 } from '@mui/material';
 import { Save as SaveIcon, Person as PersonIcon } from '@mui/icons-material';
 import { axiosHelper } from '../../utils/api/axiosHelper';
+import { jwtHelper } from '../../utils/auth/jwtHelper';
 import { useNavigate } from 'react-router-dom';
 
 interface Country {
@@ -26,11 +27,16 @@ interface InterestTag {
   name: string;
 }
 
+interface LocationTag {
+  id: number;
+  tagName: string;
+}
+
 interface UserProfile {
   walletAddress: string;
   handle: string;
   country: Country;
-  locationTags: string[];
+  locationTags: (string | LocationTag)[];
   interests: InterestTag[];
 }
 
@@ -42,35 +48,36 @@ export const SettingsPage: React.FC = () => {
   const [countries, setCountries] = useState<Country[]>([]);
   const [allInterests, setAllInterests] = useState<InterestTag[]>([]);
   const [error, setError] = useState<string>('');
+  const [locationTagsInput, setLocationTagsInput] = useState<string>('');
   const [success, setSuccess] = useState<string>('');
-  const [axiosInstance, setAxiosInstance] = useState<any>(null);
-
   useEffect(() => {
-    const instance = axiosHelper.createSecuredAxiosInstance(navigate);
-    setAxiosInstance(instance);
+    loadData();
   }, [navigate]);
-
-  useEffect(() => {
-    if (axiosInstance) {
-      loadData();
-    }
-  }, [axiosInstance]);
 
   const loadData = async () => {
     try {
       setLoading(true);
       setError('');
 
+      const axiosInstance = axiosHelper.createSecuredAxiosInstance(navigate);
+      
       const [profileRes, countriesRes, interestsRes] = await Promise.all([
         axiosInstance.get('/api/users/profile'),
-        axiosInstance.get('/api/data/countries'),
-        axiosInstance.get('/api/data/interests')
+        axiosInstance.get('/api/countries'),
+        axiosInstance.get('/api/interest-tags')
       ]);
 
       setProfile(profileRes.data);
       setCountries(countriesRes.data);
       setAllInterests(interestsRes.data);
+      
+      // Initialize location tags input with current values
+      setLocationTagsInput(profileRes.data.locationTags.map((tag: any) => 
+        typeof tag === 'object' ? tag.tagName : tag
+      ).join(', '));
     } catch (err: any) {
+      console.error('Profile loading error:', err);
+      console.error('Error response:', err.response?.status, err.response?.data);
       setError('Failed to load profile data');
     } finally {
       setLoading(false);
@@ -85,18 +92,35 @@ export const SettingsPage: React.FC = () => {
       setError('');
       setSuccess('');
 
+      // Ensure location tags are updated from input before saving
+      updateLocationTagsFromInput(locationTagsInput);
+
+      const axiosInstance = axiosHelper.createSecuredAxiosInstance(navigate);
+      
+      // Parse location tags from current input
+      const locationTags = locationTagsInput.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
+      
+      console.log('DEBUG: Location tags input:', locationTagsInput);
+      console.log('DEBUG: Parsed location tags:', locationTags);
+      
       const updateRequest = {
         handle: profile.handle,
-        countryId: profile.country.id,
-        locationTags: profile.locationTags,
-        interestTagIds: profile.interests.map(i => i.id)
+        countryId: profile.country?.id || null,
+        locationTags: locationTags,
+        interestIds: profile.interests.map(i => i.id)
       };
 
-      await axiosInstance.put('/api/users/profile', updateRequest);
+      console.log('DEBUG: Update request payload:', updateRequest);
+      console.log('DEBUG: JSON stringified:', JSON.stringify(updateRequest));
+      
+      const response = await axiosInstance.put('/api/users/profile', updateRequest);
+      console.log('DEBUG: Response received:', response.data);
       setSuccess('Profile updated successfully!');
       
-      // Clear success message after 3 seconds
-      setTimeout(() => setSuccess(''), 3000);
+      // Navigate back to home page after successful update
+      setTimeout(() => {
+        navigate('/');
+      }, 1500); // Show success message briefly before navigating
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to update profile');
     } finally {
@@ -104,10 +128,11 @@ export const SettingsPage: React.FC = () => {
     }
   };
 
-  const handleLocationTagsChange = (value: string) => {
+  const updateLocationTagsFromInput = (value: string) => {
     if (!profile) return;
     
     const tags = value.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
+    
     setProfile({
       ...profile,
       locationTags: tags
@@ -204,8 +229,12 @@ export const SettingsPage: React.FC = () => {
               </Typography>
               <TextField
                 fullWidth
-                value={profile.locationTags.join(', ')}
-                onChange={(e) => handleLocationTagsChange(e.target.value)}
+                value={locationTagsInput}
+                onChange={(e) => setLocationTagsInput(e.target.value)}
+                onBlur={(e) => {
+                  // Update profile when user finishes editing
+                  updateLocationTagsFromInput(e.target.value);
+                }}
                 placeholder="Enter location tags separated by commas (e.g., downtown, tech hub, coworking space)"
                 variant="outlined"
                 size="small"
@@ -218,7 +247,7 @@ export const SettingsPage: React.FC = () => {
                   {profile.locationTags.map((tag, index) => (
                     <Chip
                       key={index}
-                      label={tag}
+                      label={typeof tag === 'object' ? tag.tagName : tag}
                       size="small"
                       color="primary"
                       variant="outlined"

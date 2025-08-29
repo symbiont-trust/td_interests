@@ -8,6 +8,7 @@ import com.myinterests.backend.dto.auth.RegisterRequest;
 import com.myinterests.backend.dto.user.UserProfileDto;
 import com.myinterests.backend.dto.user.UpdateProfileRequest;
 import com.myinterests.backend.dto.user.SearchCriteria;
+import com.myinterests.backend.dto.user.UserCreationResult;
 import com.myinterests.backend.repository.UserRepository;
 import com.myinterests.backend.repository.CountryRepository;
 import com.myinterests.backend.repository.InterestTagRepository;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -34,23 +36,27 @@ public class UserService {
     private final LocationTagRepository locationTagRepository;
 
     @Transactional
-    public User createUser(RegisterRequest request) {
+    public UserCreationResult createUser(RegisterRequest request) {
         // Check if user already exists
-        if (userRepository.findByWalletAddress(request.getWalletAddress()).isPresent()) {
-            throw new RuntimeException("User with wallet address already exists");
+        var existingUser = userRepository.findByWalletAddress(request.getWalletAddress());
+        if (existingUser.isPresent()) {
+            return UserCreationResult.userAlreadyExists(existingUser.get());
         }
 
         // Get country if provided
         Country country = null;
         if (request.getCountryId() != null) {
-            country = countryRepository.findById(request.getCountryId())
-                .orElseThrow(() -> new RuntimeException("Country not found"));
+            var countryOpt = countryRepository.findById(request.getCountryId());
+            if (countryOpt.isEmpty()) {
+                return UserCreationResult.invalidData("Country not found");
+            }
+            country = countryOpt.get();
         }
 
         // Get interests
         Set<InterestTag> interests = interestTagRepository.findByIdIn(request.getInterestIds());
         if (interests.isEmpty()) {
-            throw new RuntimeException("At least one valid interest must be selected");
+            return UserCreationResult.invalidData("At least one valid interest must be selected");
         }
 
         // Create user
@@ -79,7 +85,7 @@ public class UserService {
         }
 
         log.info("Created user with wallet address: {}", savedUser.getWalletAddress());
-        return savedUser;
+        return UserCreationResult.success(savedUser);
     }
 
     public User getUserByWalletAddress(String walletAddress) {
@@ -158,20 +164,29 @@ public class UserService {
         // Update location tags - remove old ones and create new ones
         locationTagRepository.deleteByUserWalletAddress(walletAddress);
         if (request.getLocationTags() != null && !request.getLocationTags().isEmpty()) {
-            Set<LocationTag> locationTags = request.getLocationTags().stream()
+            // Remove duplicates from input while preserving order, then create entities
+            List<String> uniqueTagNames = request.getLocationTags().stream()
+                .distinct()
+                .collect(Collectors.toList());
+            
+            List<LocationTag> locationTagsList = uniqueTagNames.stream()
                 .map(tagName -> LocationTag.builder()
                     .tagName(tagName)
                     .user(user)
                     .build())
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
             
-            locationTagRepository.saveAll(locationTags);
+            locationTagRepository.saveAll(locationTagsList);
+            
+            // Convert to Set for the entity relationship
+            Set<LocationTag> locationTags = new HashSet<>(locationTagsList);
             user.setLocationTags(locationTags);
         } else {
             user.setLocationTags(new HashSet<>());
         }
 
-        return userRepository.save(user);
+        User savedUser = userRepository.save(user);
+        return savedUser;
     }
 
     public Page<User> searchUsers(

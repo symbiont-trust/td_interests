@@ -44,7 +44,7 @@ export const HomePage: React.FC = () => {
         setCurrentUser(user);
         setConnectionRequests(requests.filter(r => r.status === 'PENDING'));
       } catch (error) {
-        console.error('Failed to load data:', error);
+        console.error('HomePage: Failed to load data:', error);
         setError('Failed to load dashboard data');
       } finally {
         setLoading(false);

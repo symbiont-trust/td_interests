@@ -39,6 +39,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onRegistrati
   const [activeStep, setActiveStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showLoginOption, setShowLoginOption] = useState(false);
   
   // Form data
   const [handle, setHandle] = useState('');
@@ -93,11 +94,13 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onRegistrati
   const handleNext = () => {
     setActiveStep((prevStep) => prevStep + 1);
     setError(null);
+    setShowLoginOption(false);
   };
 
   const handleBack = () => {
     setActiveStep((prevStep) => prevStep - 1);
     setError(null);
+    setShowLoginOption(false);
   };
 
   const addLocationTag = () => {
@@ -157,12 +160,16 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onRegistrati
         jwtHelper.setRefreshToken(response.refreshToken);
         jwtHelper.setWalletAddress(walletAddress);
 
+        // Call the callback to update parent state
         onRegistrationSuccess();
+        
+        // Navigate to home page
+        navigate('/');
       } else {
         setError(response.message || 'Registration failed');
       }
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Registration error:', error);
       
       if (error instanceof WalletSignatureError) {
@@ -171,6 +178,11 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onRegistrati
         } else {
           setError(error.message);
         }
+      } else if (error.response?.status === 409) {
+        // User already exists - redirect to error page
+        const message = error.response.data?.message || 'This wallet address is already registered.';
+        const errorUrl = `/error?code=USER_ALREADY_EXISTS&message=${encodeURIComponent(message)}`;
+        navigate(errorUrl);
       } else if (error instanceof Error) {
         setError(error.message);
       } else {
@@ -221,7 +233,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onRegistrati
               helperText="This will be your display name (not unique)"
             />
 
-            <FormControl fullWidth margin="normal">
+            <FormControl fullWidth margin="normal" variant="outlined">
               <InputLabel>Country (Optional)</InputLabel>
               <Select
                 value={selectedCountry?.id || ''}
@@ -229,6 +241,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onRegistrati
                   const country = countries.find(c => c.id === e.target.value);
                   setSelectedCountry(country || null);
                 }}
+                label="Country (Optional)"
               >
                 <MenuItem value="">
                   <em>None</em>
@@ -356,6 +369,17 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onRegistrati
       {error && (
         <Alert severity="error" sx={{ mb: 2 }}>
           {error}
+          {showLoginOption && (
+            <Box sx={{ mt: 2 }}>
+              <Button 
+                variant="outlined" 
+                onClick={() => navigate('/login')}
+                size="small"
+              >
+                Go to Login Page
+              </Button>
+            </Box>
+          )}
         </Alert>
       )}
 

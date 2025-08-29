@@ -33,21 +33,39 @@ public class AuthController {
                         .build());
             }
 
-            // Create user
-            var user = userService.createUser(request);
+            // Attempt to create user
+            var result = userService.createUser(request);
+            
+            if (result.isSuccess()) {
+                // User created successfully - generate tokens
+                String accessToken = jwtUtil.generateToken(result.getUser().getWalletAddress());
+                String refreshToken = jwtUtil.generateRefreshToken(result.getUser().getWalletAddress());
 
-            // Generate tokens
-            String accessToken = jwtUtil.generateToken(user.getWalletAddress());
-            String refreshToken = jwtUtil.generateRefreshToken(user.getWalletAddress());
-
-            return ResponseEntity.ok(AuthResponse.builder()
-                .success(true)
-                .message("User registered successfully")
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .walletAddress(user.getWalletAddress())
-                .handle(user.getHandle())
-                .build());
+                return ResponseEntity.ok(AuthResponse.builder()
+                    .success(true)
+                    .message("User registered successfully")
+                    .accessToken(accessToken)
+                    .refreshToken(refreshToken)
+                    .walletAddress(result.getUser().getWalletAddress())
+                    .handle(result.getUser().getHandle())
+                    .build());
+                    
+            } else if (result.isUserAlreadyExists()) {
+                // User already exists - return 409 Conflict with helpful message
+                return ResponseEntity.status(409)
+                    .body(AuthResponse.builder()
+                        .success(false)
+                        .message(result.getMessage())
+                        .build());
+                        
+            } else {
+                // Invalid data - return 400 Bad Request
+                return ResponseEntity.badRequest()
+                    .body(AuthResponse.builder()
+                        .success(false)
+                        .message(result.getMessage())
+                        .build());
+            }
 
         } catch (Exception e) {
             log.error("Registration failed for wallet {}: {}", request.getWalletAddress(), e.getMessage());

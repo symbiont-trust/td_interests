@@ -58,6 +58,7 @@ export const NavigationMenu: React.FC<NavigationMenuProps> = ({ mobileOpen, onMo
   const shouldUseDesktopMode = isDesktop !== undefined ? isDesktop : !isSmallScreen;
 
   const handleNavClick = (path: string) => {
+    console.log('NavigationMenu: Clicking on path:', path);
     navigate(path);
     if (!shouldUseDesktopMode) {
       onMobileToggle();

@@ -69,8 +69,12 @@ public class UserController {
             Authentication authentication) {
         
         String walletAddress = authentication.getName();
+        log.info("DEBUG: UserController updateProfile called for wallet: {}", walletAddress);
+        log.info("DEBUG: Request payload: {}", request);
+        
         User updatedUser = userService.updateUserProfile(walletAddress, request);
         
+        log.info("DEBUG: Profile updated successfully, returning response");
         return ResponseEntity.ok(UserProfileDto.fromUser(updatedUser));
     }
 

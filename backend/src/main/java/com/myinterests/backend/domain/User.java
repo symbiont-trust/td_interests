@@ -29,7 +29,7 @@ public class User extends Domain {
             nullable = true)
     private Country country;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = false)
     private Set<LocationTag> locationTags;
 
     @ManyToMany(fetch = FetchType.LAZY)

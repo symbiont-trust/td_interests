@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -32,7 +33,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain) throws ServletException, IOException {
 
+        log.debug("JWT Filter: Processing request to {}", request.getRequestURI());
         final String authHeader = request.getHeader("Authorization");
+        log.debug("JWT Filter: Authorization header: {}", authHeader != null ? "present" : "missing");
         final String jwt;
         final String walletAddress;
 
@@ -69,30 +72,54 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 walletAddress = jwtUtil.extractWalletAddress(jwt);
 
                 if (walletAddress != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                    var user = userService.getUserByWalletAddress(walletAddress);
+                    log.debug("JWT Filter: Checking authentication for wallet address: {}", walletAddress);
                     
-                    if (user != null && jwtUtil.validateToken(jwt, walletAddress)) {
-                        // Create authentication token with user roles
-                        List<SimpleGrantedAuthority> authorities = List.of(
-                            new SimpleGrantedAuthority("ROLE_USER")
-                        );
+                    if (jwtUtil.validateToken(jwt, walletAddress)) {
+                        log.debug("JWT Filter: Token is valid for wallet address: {}", walletAddress);
+                        var user = userService.getUserByWalletAddress(walletAddress);
+                        log.debug("JWT Filter: User lookup result: {}", user != null ? "found" : "not found");
+                        
+                        if (user != null) {
+                            log.debug("JWT Filter: User found and token valid, granting ROLE_USER");
+                            // Create authentication token with user roles
+                            List<SimpleGrantedAuthority> authorities = List.of(
+                                new SimpleGrantedAuthority("ROLE_USER")
+                            );
 
-                        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                            walletAddress,
-                            null,
-                            authorities
-                        );
-                        authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                        SecurityContextHolder.getContext().setAuthentication(authToken);
+                            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                                walletAddress,
+                                null,
+                                authorities
+                            );
+                            authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                            SecurityContextHolder.getContext().setAuthentication(authToken);
 
-                        // Set wallet address as request attribute for easy access
-                        request.setAttribute("walletAddress", walletAddress);
+                            // Set wallet address as request attribute for easy access
+                            request.setAttribute("walletAddress", walletAddress);
+                        } else {
+                            log.warn("JWT Filter: Valid token but user not found in database for wallet: {}. Setting UNREGISTERED_USER role.", walletAddress);
+                            // Set authentication with special UNREGISTERED_USER role
+                            List<SimpleGrantedAuthority> authorities = List.of(
+                                new SimpleGrantedAuthority("ROLE_UNREGISTERED_USER")
+                            );
+
+                            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                                walletAddress,
+                                null,
+                                authorities
+                            );
+                            authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                            SecurityContextHolder.getContext().setAuthentication(authToken);
+                        }
+                    } else {
+                        log.warn("JWT Filter: Invalid token for wallet address: {}", walletAddress);
                     }
                 }
             }
         } catch (Exception e) {
-            log.error("Cannot set user authentication: {}", e.getMessage());
+            log.error("Cannot set user authentication: {}", e.getMessage(), e);
         }
+        
 
         filterChain.doFilter(request, response);
     }

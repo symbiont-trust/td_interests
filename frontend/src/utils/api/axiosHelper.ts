@@ -55,17 +55,22 @@ const configureResponseInterceptor = (axiosInstance: AxiosInstance, navigate: Na
 
         if (status === 401) {
           const reason = headers['401-reason'];
+          console.log('Got 401 error with reason:', reason);
           
           if (reason === 'JWT_EXPIRED') {
             // Try to refresh token
             const refreshToken = jwtHelper.getRefreshToken();
+            console.log('Attempting token refresh. Refresh token exists:', !!refreshToken);
+            
             if (refreshToken && !jwtHelper.isTokenExpired(refreshToken)) {
               try {
+                console.log('Calling refresh token API...');
                 const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/auth/refresh`, {
                   refreshToken
                 });
                 
                 if (response.data.success) {
+                  console.log('Token refresh successful');
                   jwtHelper.setJWTToken(response.data.accessToken);
                   jwtHelper.setRefreshToken(response.data.refreshToken);
                   
@@ -73,13 +78,18 @@ const configureResponseInterceptor = (axiosInstance: AxiosInstance, navigate: Na
                   const originalRequest = error.config;
                   originalRequest.headers.authorization = `Bearer ${response.data.accessToken}`;
                   return axios(originalRequest);
+                } else {
+                  console.log('Token refresh failed - unsuccessful response');
                 }
               } catch (refreshError) {
                 console.error('Token refresh failed:', refreshError);
               }
+            } else {
+              console.log('Refresh token expired or missing');
             }
             
             // If refresh fails, redirect to login
+            console.log('Clearing all tokens and redirecting to login');
             jwtHelper.clearAll();
             navigateTo(navigate, currentRoute, '/login');
           } else {
@@ -88,12 +98,27 @@ const configureResponseInterceptor = (axiosInstance: AxiosInstance, navigate: Na
         } else if (status === 403) {
           const reason = headers['403-reason'];
           const xErrorType = headers['x-error-type'];
+          
+          console.log('403 Error Details:', {
+            url: error.config?.url,
+            reason,
+            xErrorType,
+            currentRoute
+          });
 
-          if (xErrorType === 'INSUFFICIENT_ROLES') {
+          if (xErrorType === 'USER_NOT_REGISTERED') {
+            // User has valid JWT but doesn't exist in database - redirect to not registered page
+            console.log('User token valid but not registered in database, redirecting to not registered page');
+            jwtHelper.clearAll(); // Clear the invalid tokens
+            navigateTo(navigate, currentRoute, '/not-registered');
+          } else if (xErrorType === 'INSUFFICIENT_ROLES') {
+            console.log('Insufficient roles, redirecting to forbidden');
             navigateTo(navigate, currentRoute, '/forbidden');
           } else if (reason === 'WALLET_NOT_VERIFIED') {
+            console.log('Wallet not verified, redirecting to verify-wallet');
             navigateTo(navigate, currentRoute, '/verify-wallet');
           } else {
+            console.log('Other 403 error, redirecting to forbidden');
             navigateTo(navigate, currentRoute, '/forbidden');
           }
         } else {

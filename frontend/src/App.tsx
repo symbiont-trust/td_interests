@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react'
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
 import CssBaseline from '@mui/material/CssBaseline'
-import { Container, Box, useTheme, useMediaQuery } from '@mui/material'
+import { Container, Box, useTheme, useMediaQuery, Alert, Button } from '@mui/material'
 import { useAccount } from 'wagmi'
 import { jwtHelper } from './utils/auth/jwtHelper'
 import { RegistrationForm } from './components/auth/RegistrationForm'
 import { LoginForm } from './components/auth/LoginForm'
+import NotRegisteredPage from './components/auth/NotRegisteredPage'
+import ErrorPage from './components/error/ErrorPage'
 import { Header } from './components/layout/Header'
 import { Footer } from './components/layout/Footer'
 import { NavigationMenu } from './components/layout/NavigationMenu'
@@ -40,6 +42,7 @@ const theme = createTheme({
 
 function AppContent() {
   const theme = useTheme();
+  const navigate = useNavigate();
   const { isConnected } = useAccount();
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [loading, setLoading] = useState(true)
@@ -126,6 +129,8 @@ function AppContent() {
               <Route path="/contact" element={<ContactPage />} />
               <Route path="/register" element={<RegistrationForm onRegistrationSuccess={handleAuthenticationSuccess} />} />
               <Route path="/login" element={<LoginForm onLoginSuccess={handleAuthenticationSuccess} />} />
+              <Route path="/not-registered" element={<NotRegisteredPage />} />
+              <Route path="/error" element={<ErrorPage />} />
               
               {/* Home route - conditional */}
               <Route path="/" element={isAuthenticated ? <HomePage /> : <WelcomeContent />} />
@@ -141,6 +146,40 @@ function AppContent() {
               <Route path="/public-threads/:threadId" element={<ProtectedRoute><PublicThreadView /></ProtectedRoute>} />
               <Route path="/profile/:walletAddress" element={<ProtectedRoute><div>User Profile - Coming Soon</div></ProtectedRoute>} />
               <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
+              
+              {/* Error routes */}
+              <Route path="/forbidden" element={
+                <Container maxWidth="md" sx={{ mt: 4 }}>
+                  <Alert severity="error" sx={{ mb: 3 }}>
+                    <strong>Access Forbidden</strong>
+                  </Alert>
+                  <Box sx={{ mb: 3 }}>
+                    <p>
+                      You do not have permissions to access a backend resource. 
+                      This could be because you are not logged in.
+                    </p>
+                    <p>
+                      <strong>What you can try:</strong>
+                    </p>
+                    <ul>
+                      <li>Please log in to your account</li>
+                      <li>If you're already logged in, try refreshing the page</li>
+                      <li>If you still cannot access the resource after logging in, you may not have privileges to access this resource</li>
+                    </ul>
+                    <p>
+                      If the problem persists, please contact the admin of My Interests with details about what you were trying to access.
+                    </p>
+                  </Box>
+                  <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center' }}>
+                    <Button variant="contained" href="/login">
+                      Go to Login
+                    </Button>
+                    <Button variant="outlined" href="/">
+                      Go Home
+                    </Button>
+                  </Box>
+                </Container>
+              } />
               
               {/* Fallback */}
               <Route path="*" element={<Navigate to="/" />} />

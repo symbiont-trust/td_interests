@@ -1,6 +1,7 @@
 package com.myinterests.backend.config;
 
 import com.myinterests.backend.security.JwtAuthenticationFilter;
+import com.myinterests.backend.security.CustomAccessDeniedHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,6 +24,7 @@ import java.util.Arrays;
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final CustomAccessDeniedHandler accessDeniedHandler;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -36,6 +38,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/countries/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/continents/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/interest-tags/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/config/**").permitAll()
                 .requestMatchers("/api/profile-auth/**").permitAll() // Profile API authentication
                 .requestMatchers("/api/profile/**").hasRole("API_CLIENT") // Profile API endpoints
                 // Protected endpoints
@@ -45,6 +48,9 @@ public class SecurityConfig {
                 .requestMatchers("/api/notifications/**").hasRole("USER")
                 // All other requests require authentication
                 .anyRequest().authenticated()
+            )
+            .exceptionHandling(exceptions -> exceptions
+                .accessDeniedHandler(accessDeniedHandler)
             )
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
@@ -58,7 +64,7 @@ public class SecurityConfig {
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);
-        configuration.setExposedHeaders(Arrays.asList("hasNotifications")); // For notification system
+        configuration.setExposedHeaders(Arrays.asList("hasNotifications", "x-error-type", "403-reason")); // For notification system and error handling
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
